@@ -1,83 +1,60 @@
+
+
 #using <System.dll>
-#include <Windows.h>
-#include <tchar.h>
-#include <TlHelp32.h>
-#include <stdio.h>
-#include <iostream>
 #include <conio.h>
 
-#include "SMStructs.h"
-#include "SMObject.h"
+//paste all the SMObject into the source files folder for each of the sections
+#include <SMObject.h>
+#include <smstructs.h>	
+
 
 using namespace System;
-using namespace System::Net::Sockets;
-using namespace System::Net;
-using namespace System::Text;
+using namespace System::Diagnostics;
+using namespace System::Threading;
 
-#define NUM_UNITS 3  //how many modules you have set up
+int main() {
 
-bool IsProcessRunning(const char* processName);
-void StartProcesses();
-
-//defining start up sequence
-TCHAR Units[10][20] = //
-{
-	TEXT("GPS.exe"),
-	TEXT("Camera.exe"),
-	TEXT("Display.exe"),
-	TEXT("VehicleControl.exe"),
-	TEXT("Laser.exe"),
-
-};
-
-int main()
-{
-	//start all 5 modules
-	StartProcesses();
-	return 0;
-}
+	// tele-operation
+		// Declaration
+	SMObject PMObj(TEXT("ProcessManagement"), sizeof(ProcessManagement));
 
 
-//Is process running function
-bool IsProcessRunning(const char* processName)
-{
-	bool exists = false;
-	PROCESSENTRY32 entry;
-	entry.dwSize = sizeof(PROCESSENTRY32);
+	array<String^>^ Modulelist = gcnew array<String^>{"Laser", "Display", "Vehicle", "GPS", "Camera"};
+	array<int>^ Critical = gcnew array<int>(Modulelist->Length) { 1, 1, 1, 0, 0 };
+	array<Process^>^ ProcessList = gcnew array<Process^>(Modulelist->Length);
 
-	HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
-
-	if (Process32First(snapshot, &entry))
-		while (Process32Next(snapshot, &entry))
-			if (!_stricmp((const char *)entry.szExeFile, processName))
-				exists = true;
-
-	CloseHandle(snapshot);
-	return exists;
-}
+	//SM Creation and Seeking access
+	PMObj.SMCreate();
+	PMObj.SMAccess();
 
 
-void StartProcesses()
-{
-	STARTUPINFO s[10];
-	PROCESS_INFORMATION p[10];
-	// check all the units to see whether they are running
-	for (int i = 0; i < NUM_UNITS; i++)
-	{
-		if (!IsProcessRunning((const char *)Units[i]))
-		{
-			ZeroMemory(&s[i], sizeof(s[i]));
-			s[i].cb = sizeof(s[i]);
-			ZeroMemory(&p[i], sizeof(p[i]));
+	ProcessManagement* PMData = (ProcessManagement*)PMObj.pData;
 
-			if (!CreateProcess(NULL, Units[i], NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &s[i], &p[i]))
-			{
-				printf("%s failed (%d).\n", Units[i], GetLastError());
-				_getch();
-			}
-			std::cout << "Started: " << Units[i] << std::endl;
-			Sleep(100);
+	for (int i = 0; i < Modulelist->Length; i++) {
+		//creates an array of all information processes
+		if (Process::GetProcessesByName(Modulelist[i])->Length == 0) {
+			ProcessList[i] = gcnew Process;
+			ProcessList[i]->StartInfo->FileName = Modulelist[i];
+			Console::WriteLine("The process " + Modulelist[i]);
+			ProcessList[i]->StartInfo->WorkingDirectory = "../Executable";
+			ProcessList[i]->Start();
+			Console::WriteLine("The process" + Modulelist[i] + ".exe started");
+
 		}
 	}
-}
+	// need to deal with priorities
 
+	//Main Loop
+
+	while (!_kbhit()) {
+		Thread::Sleep(1000);
+
+	}
+
+	PMData->Shutdown.Status = 0xFF;// put in all other files by replacing Shutdown in the If statement (youll know when u see it otherwise 1:29:00 lecture 2)
+	// Initialization
+	// Main loop
+	//Clearing and Shutdown
+
+	return 0;
+}

@@ -1,4 +1,12 @@
 
+#using <System.dll>
+#include <conio.h>
+
+//paste all the SMObject into the source files folder for each of the sections
+#include <SMObject.h>
+#include <smstructs.h>	
+
+
 #include <iostream>
 #include <cstdlib>
 #include <cstdio>
