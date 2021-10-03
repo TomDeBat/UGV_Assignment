@@ -61,6 +61,10 @@ void motion(int x, int y);
 
 using namespace std;
 using namespace scos;
+using namespace System;
+using namespace System::Diagnostics;
+using namespace System::Threading;
+
 
 // Used to store the previous mouse location so we
 //   can calculate relative mouse movement.
@@ -72,11 +76,18 @@ Vehicle * vehicle = NULL;
 double speed = 0;
 double steering = 0;
 
+SMObject PMObj(TEXT("ProcessManagement"), sizeof(ProcessManagement));
+ProcessManagement* PMData = nullptr;
+
 //int _tmain(int argc, _TCHAR* argv[]) {
 int main(int argc, char ** argv) {
 
 	const int WINDOW_WIDTH = 800;
 	const int WINDOW_HEIGHT = 600;
+
+	PMObj.SMAccess();
+	PMData = (ProcessManagement*)PMObj.pData;
+
 
 	glutInit(&argc, (char**)(argv));
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
@@ -120,6 +131,7 @@ int main(int argc, char ** argv) {
 
 
 void display() {
+
 	// -------------------------------------------------------------------------
 	//  This method is the main draw routine. 
 	// -------------------------------------------------------------------------
@@ -181,7 +193,27 @@ double getTime()
 #endif
 }
 
+// put code in here
 void idle() {
+
+	if (PMData->Shutdown.Flags.Display) exit(0);
+	//Console::WriteLine("I have reached here");
+	PMData->Heartbeat.Flags.Display = 1;
+
+
+	if (PMData->PMHeartbeat.Flags.Display == 1) {
+		PMData->PMHeartbeat.Flags.Display = 0;
+		PMData->PMCounter[1] = 0;
+	}
+	else {
+		if (PMData->PMCounter[1] > PM_WAIT) {
+			PMData->Shutdown.Status = 0xFF;
+			
+		}
+		else {
+			PMData->PMCounter[1]++;
+		}
+	}
 
 	if (KeyManager::get()->isAsciiKeyPressed('a')) {
 		Camera::get()->strafeLeft();

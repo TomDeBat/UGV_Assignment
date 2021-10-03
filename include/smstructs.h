@@ -18,6 +18,12 @@ using namespace System::Text;
 
 
 #define STANDARD_LASER_LENGTH 361
+#define LASER_WAIT 40
+#define GPS_WAIT 40
+#define VEHICLE_WAIT 40
+#define CAMERA_WAIT 40
+#define DISPLAY_WAIT 60
+#define PM_WAIT 30
 
 struct SM_Laser
 {
@@ -42,11 +48,11 @@ struct UnitFlags
 {
 	unsigned char	ProcessManagement : 1,	//NONCRITICAL
 					Laser : 1,				//NONCRITICAL
+					Display : 1,			//NONCRITICAL
 					VehicleControl : 1,		//NONCRITICAL
 					GPS : 1,				//NONCRITICAL
-					OpenGL : 1,				//NONCRITICAL
 					Camera : 1,				//NONCRITICAL
-					Garbage : 2;
+					Garbage : 3;
 };
 
 union ExecFlags
@@ -59,6 +65,8 @@ struct ProcessManagement
 {
 	ExecFlags Heartbeat;
 	ExecFlags Shutdown;
+	ExecFlags PMHeartbeat;
+	int PMCounter[5];
 	long int LifeCounter;
 };
 

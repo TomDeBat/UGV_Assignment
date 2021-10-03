@@ -21,11 +21,18 @@ zmq::context_t context(1);
 
 zmq::socket_t subscriber(context, ZMQ_SUB);
 
+SMObject PMObj(TEXT("ProcessManagement"), sizeof(ProcessManagement));
+ProcessManagement* PMData = nullptr;
+
+
 int main(int argc, char** argv)
 {
 	//Define window size
 	const int WINDOW_WIDTH = 800;
 	const int WINDOW_HEIGHT = 600;
+
+	PMObj.SMAccess();
+	PMData = (ProcessManagement*)PMObj.pData;
 
 	//GL Window setup
 	glutInit(&argc, (char**)(argv));
@@ -64,9 +71,27 @@ void display()
 	glEnd();
 	glutSwapBuffers();
 }
+
+
 void idle()
 {
+	Console::WriteLine("The value " + PMData->Shutdown.Flags.Camera);
+	if (PMData->Shutdown.Flags.Camera) exit(0);
+	PMData->Heartbeat.Flags.Camera = 1;
 
+	if (PMData->PMHeartbeat.Flags.Camera == 1) {
+		PMData->PMHeartbeat.Flags.Camera = 0;
+		PMData->PMCounter[4] = 0;
+	}
+	else {
+		if (PMData->PMCounter[4] > PM_WAIT) {
+			PMData->Shutdown.Status = 0xFF;
+			PMData->PMCounter[4] = 0;
+		}
+		else {
+			PMData->PMCounter[4]++;
+		}
+	}
 	//receive from zmq
 	zmq::message_t update;
 	if (subscriber.recv(&update, ZMQ_NOBLOCK))
