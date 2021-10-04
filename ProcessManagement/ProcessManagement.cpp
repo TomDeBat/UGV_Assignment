@@ -61,6 +61,7 @@ int main() {
 	SM_GPS* GPSData = (SM_GPS*)GPSSMObject.pData;
 	SM_VehicleControl* VehicleData = (SM_VehicleControl*)VehicleSMObject.pData;
 
+	PMData->PMHeartbeat.Status = 0xFF;
 
 	for (int i = 0; i < Modulelist->Length; i++) {
 		//creates an array of all information processes
@@ -69,9 +70,9 @@ int main() {
 			ProcessList[i]->StartInfo->FileName = Modulelist[i];
 			Console::WriteLine("The process " + Modulelist[i]);
 			ProcessList[i]->StartInfo->WorkingDirectory = "../Executable";
-			ProcessList[i]->Kill();
 			ProcessList[i]->Start();
 			Console::WriteLine("The process " + Modulelist[i] + ".exe started");
+			Thread::Sleep(1000);
 
 		}
 	}

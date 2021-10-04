@@ -30,7 +30,7 @@ int main(int argc, char** argv)
 	//Define window size
 	const int WINDOW_WIDTH = 800;
 	const int WINDOW_HEIGHT = 600;
-
+	
 	PMObj.SMAccess();
 	PMData = (ProcessManagement*)PMObj.pData;
 

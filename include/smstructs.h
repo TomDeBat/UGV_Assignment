@@ -18,12 +18,13 @@ using namespace System::Text;
 
 
 #define STANDARD_LASER_LENGTH 361
-#define LASER_WAIT 40
-#define GPS_WAIT 40
-#define VEHICLE_WAIT 40
-#define CAMERA_WAIT 40
+#define LASER_WAIT 60
+#define GPS_WAIT 60
+#define VEHICLE_WAIT 60
+#define CAMERA_WAIT 60
 #define DISPLAY_WAIT 60
-#define PM_WAIT 30
+#define PM_WAIT 100
+#define PI_DEF 3.14159
 
 struct SM_Laser
 {
