@@ -24,7 +24,8 @@ int main()
 	__int64 Frequency, Counter;
 	int Shutdown = 0x00;
 	QueryPerformanceFrequency((LARGE_INTEGER*)&Frequency);
-
+	PMObj.SMCreate();
+	LaserSMObject.SMCreate();
 	PMObj.SMAccess();
 	LaserSMObject.SMAccess();
 
@@ -33,7 +34,7 @@ int main()
 	PMData->Shutdown.Flags.Laser = 0;
 
 	// LMS151 port number must be 2111
-	int PortNumber = 2111;
+	int PortNumber = 23000;
 
 	// Pointer to TcpClent type object on managed heap
 	TcpClient^ Client;
@@ -69,7 +70,9 @@ int main()
 
 	while (!PMData->Shutdown.Flags.Laser)
 	{
+		Thread::Sleep(25);
 		PMData->Heartbeat.Flags.Laser = 1; // Set heartbeat flag
+		PMData->PMHeartbeat.Flags.Laser = 1; // JUST FOR TESTING
 
 		if (PMData->PMHeartbeat.Flags.Laser == 1) {
 			PMData->PMHeartbeat.Flags.Laser = 0;

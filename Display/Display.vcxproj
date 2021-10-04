@@ -132,7 +132,7 @@
     <ClInclude Include="Vehicle.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\UGV_2021-master\Common\SMObject.cpp" />
+    <ClCompile Include="..\Common\SMObject.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Frustum.cpp" />
     <ClCompile Include="Ground.cpp" />

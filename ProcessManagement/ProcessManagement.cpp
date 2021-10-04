@@ -20,7 +20,6 @@ using namespace System::Net::Sockets;
 using namespace System::Net;
 using namespace System::Text;
 
-bool IsProcessRunning(const char* processName);
 
 TCHAR Units[10][20] = //
 {
@@ -70,6 +69,7 @@ int main() {
 			ProcessList[i]->StartInfo->FileName = Modulelist[i];
 			Console::WriteLine("The process " + Modulelist[i]);
 			ProcessList[i]->StartInfo->WorkingDirectory = "../Executable";
+			ProcessList[i]->Kill();
 			ProcessList[i]->Start();
 			Console::WriteLine("The process " + Modulelist[i] + ".exe started");
 
@@ -228,23 +228,6 @@ int main() {
 	//Clearing and Shutdown
 
 	return 0;
-}
-
-bool IsProcessRunning(const char* processName)
-{
-	bool exists = false;
-	PROCESSENTRY32 entry;
-	entry.dwSize = sizeof(PROCESSENTRY32);
-
-	HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, NULL);
-
-	if (Process32First(snapshot, &entry))
-		while (Process32Next(snapshot, &entry))
-			if (!_stricmp(entry.szExeFile, processName))
-				exists = true;
-
-	CloseHandle(snapshot);
-	return exists;
 }
 
 

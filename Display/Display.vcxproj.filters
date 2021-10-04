@@ -86,7 +86,7 @@
     <ClCompile Include="Vehicle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\UGV_2021-master\Common\SMObject.cpp">
+    <ClCompile Include="..\Common\SMObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

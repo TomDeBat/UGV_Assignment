@@ -121,7 +121,7 @@
     <ClInclude Include="GPS.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\UGV_2021-master\Common\SMObject.cpp" />
+    <ClCompile Include="..\Common\SMObject.cpp" />
     <ClCompile Include="GPS.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
