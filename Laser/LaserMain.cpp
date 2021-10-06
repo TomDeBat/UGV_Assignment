@@ -32,7 +32,7 @@ int main()
 
 	ProcessManagement* PMData = (ProcessManagement*)PMObj.pData;
 	SM_Laser* LaserData = (SM_Laser*)LaserSMObject.pData;
-	PMData->Shutdown.Flags.Laser = 0;
+	//PMData->Heartbeat.Flags.Laser = 0;
 
 	// LMS151 port number must be 2111
 	int PortNumber = 23000;
@@ -85,6 +85,8 @@ int main()
 	//Console::ReadKey();
 
 	SendData = System::Text::Encoding::ASCII->GetBytes(AskScan);
+
+	PMData->Shutdown.Flags.Laser = 0;
 
 	while (!PMData->Shutdown.Flags.Laser)
 	{
@@ -161,7 +163,7 @@ int main()
 	Client->Close();
 
 
-
+	Console:
 
 
 	// just to pause the actual thing

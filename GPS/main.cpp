@@ -23,9 +23,9 @@ int main()
 	int Shutdown = 0x00;
 
 	QueryPerformanceFrequency((LARGE_INTEGER*)&Frequency);
-	PMObj.SMCreate();
+	//PMObj.SMCreate();
 	PMObj.SMAccess();
-	GPSSMObject.SMCreate();
+	//GPSSMObject.SMCreate();
 	GPSSMObject.SMAccess();
 	ProcessManagement* PMData = (ProcessManagement*)PMObj.pData;
 	SM_GPS* GPSData = (SM_GPS*)GPSSMObject.pData;
@@ -49,8 +49,8 @@ int main()
 
 		QueryPerformanceCounter((LARGE_INTEGER*)&Counter);
 		TimeStamp = (double)Counter / (double)Frequency * 1000; // ms
-		//Console::WriteLine("GPS time stamp  : {0,12:F3} {1,12:X2}", TimeStamp, Shutdown);
-		Thread::Sleep(25);
+		Console::WriteLine("GPS time stamp  : {0,12:F3} {1,12:X2}", TimeStamp, Shutdown);
+		Thread::Sleep(50);
 		if (_kbhit())
 			break;
 	}

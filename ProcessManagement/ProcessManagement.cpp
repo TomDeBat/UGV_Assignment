@@ -62,17 +62,18 @@ int main() {
 	SM_VehicleControl* VehicleData = (SM_VehicleControl*)VehicleSMObject.pData;
 
 	PMData->PMHeartbeat.Status = 0xFF;
-
-	for (int i = 0; i < Modulelist->Length; i++) {
+	//Modulelist->Length
+	for (int i = 1; i < 2; i++) {
 		//creates an array of all information processes
 		if (Process::GetProcessesByName(Modulelist[i])->Length == 0) {
 			ProcessList[i] = gcnew Process;
 			ProcessList[i]->StartInfo->FileName = Modulelist[i];
 			Console::WriteLine("The process " + Modulelist[i]);
 			ProcessList[i]->StartInfo->WorkingDirectory = "../Executable";
+			//ProcessList[i]->Kill();
 			ProcessList[i]->Start();
 			Console::WriteLine("The process " + Modulelist[i] + ".exe started");
-			Thread::Sleep(1000);
+			Thread::Sleep(100);
 
 		}
 	}
@@ -90,23 +91,24 @@ int main() {
 		
 		PMData->PMHeartbeat.Status = 0xFF;
 		
-		
+		/*
 		// Laser - critical
 		if (PMData->Heartbeat.Flags.Laser == 1) {
 			LaserCounter = 0;
+			Console::WriteLine("Laser is Alive");
 			PMData->Heartbeat.Flags.Laser = 0;
 		} else {
 			if (LaserCounter < LASER_WAIT) {
 				LaserCounter++;
 			} else {
 				Console::WriteLine("The process" + Modulelist[0] + " is critical, total shutdown required");
-				PMData->Shutdown.Status = 0xFF;
-				break;
+				//PMData->Shutdown.Status = 0xFF;
+				//break;
 			}
 
 
 		}
-
+		*/
 		// Display - non critical
 		if (PMData->Heartbeat.Flags.Display == 1) {
 			DisplayCounter = 0;
@@ -137,7 +139,7 @@ int main() {
 			}
 
 		}
-
+		/*
 		// Vehicle Control - critical
 		if (PMData->Heartbeat.Flags.VehicleControl == 1) {
 			VehicleCounter = 0;
@@ -149,12 +151,13 @@ int main() {
 			}
 			else {
 				Console::WriteLine("The process" + Modulelist[2] + " is critical, total shutdown required");
-				PMData->Shutdown.Status = 0xFF;
-				break;
+				//PMData->Shutdown.Status = 0xFF;
+				//break;
 			}
 
 		}
-
+		
+		
 
 		// GPS - non critical
 		if (PMData->Heartbeat.Flags.GPS == 1) {
@@ -181,12 +184,15 @@ int main() {
 					Console::WriteLine("The process" + Modulelist[3] + " is being restarted");
 					ProcessList[3]->Kill();
 					ProcessList[3]->Start();
+					Thread::Sleep(100);
 					GPSCounter = 0;
 				}
 			}
 
 		}
+		
 
+		
 		// Camera - non critical
 		if (PMData->Heartbeat.Flags.Camera == 1) {
 			CameraCounter = 0;
@@ -217,11 +223,14 @@ int main() {
 			}
 
 		}
-
+		*/
 
 		Thread::Sleep(10);
 
 	}
+
+	Console::ReadKey();
+	Console::ReadKey();
 
 	PMData->Shutdown.Status = 0xFF;// put in all other files by replacing Shutdown in the If statement (youll know when u see it otherwise 1:29:00 lecture 2)
 	// Initialization
