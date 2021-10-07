@@ -163,7 +163,8 @@ int main()
 	Client->Close();
 
 
-	Console:
+	Console::ReadKey();
+	Console::ReadKey();
 
 
 	// just to pause the actual thing

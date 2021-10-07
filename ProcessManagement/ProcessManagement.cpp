@@ -63,7 +63,7 @@ int main() {
 
 	PMData->PMHeartbeat.Status = 0xFF;
 	//Modulelist->Length
-	for (int i = 1; i < 2; i++) {
+	for (int i = 0; i < 1; i++) {
 		//creates an array of all information processes
 		if (Process::GetProcessesByName(Modulelist[i])->Length == 0) {
 			ProcessList[i] = gcnew Process;
@@ -91,7 +91,7 @@ int main() {
 		
 		PMData->PMHeartbeat.Status = 0xFF;
 		
-		/*
+		
 		// Laser - critical
 		if (PMData->Heartbeat.Flags.Laser == 1) {
 			LaserCounter = 0;
@@ -108,7 +108,7 @@ int main() {
 
 
 		}
-		*/
+		/*
 		// Display - non critical
 		if (PMData->Heartbeat.Flags.Display == 1) {
 			DisplayCounter = 0;
@@ -139,7 +139,7 @@ int main() {
 			}
 
 		}
-		/*
+		
 		// Vehicle Control - critical
 		if (PMData->Heartbeat.Flags.VehicleControl == 1) {
 			VehicleCounter = 0;
