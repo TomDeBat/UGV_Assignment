@@ -36,12 +36,12 @@ int main()
 
 		if (PMData->PMHeartbeat.Flags.GPS == 1) {
 			PMData->PMHeartbeat.Flags.GPS = 0;
-			PMData->PMCounter[3] = 0;
+			PMData->PMCounter[GPS_POS] = 0;
 		}
 		else {
-			Console::WriteLine("PM Counter: {0:D}", PMData->PMCounter[3]);
-			PMData->PMCounter[3]++;
-			if  (PMData->PMCounter[3] > PM_WAIT) {
+			Console::WriteLine("PM Counter: {0:D}", PMData->PMCounter[GPS_POS]);
+			PMData->PMCounter[GPS_POS]++;
+			if  (PMData->PMCounter[GPS_POS] > PM_WAIT) {
 				//PMData->Shutdown.Status = 0xFF;
 				break;
 			}
@@ -55,8 +55,8 @@ int main()
 			break;
 	}
 
-	Console::ReadKey();
-	Console::ReadKey();
+	//Console::ReadKey();
+	//Console::ReadKey();
 
 	return 0;
 }

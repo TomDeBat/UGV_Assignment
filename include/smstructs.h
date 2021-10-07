@@ -22,8 +22,16 @@ using namespace System::Text;
 #define GPS_WAIT 60
 #define VEHICLE_WAIT 60
 #define CAMERA_WAIT 60
-#define DISPLAY_WAIT 60
+#define DISPLAY_WAIT 100
 #define PM_WAIT 100
+
+#define LASER_POS 4
+#define GPS_POS 3
+#define VEHICLE_POS 2
+#define DISPLAY_POS 1
+#define CAMERA_POS 0
+
+
 #define PI_DEF 3.14159
 
 struct SM_Laser

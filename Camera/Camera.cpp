@@ -81,15 +81,15 @@ void idle()
 
 	if (PMData->PMHeartbeat.Flags.Camera == 1) {
 		PMData->PMHeartbeat.Flags.Camera = 0;
-		PMData->PMCounter[4] = 0;
+		PMData->PMCounter[CAMERA_POS] = 0;
 	}
 	else {
-		if (PMData->PMCounter[4] > PM_WAIT) {
+		if (PMData->PMCounter[CAMERA_POS] > PM_WAIT) {
 			PMData->Shutdown.Status = 0xFF;
-			PMData->PMCounter[4] = 0;
+			PMData->PMCounter[CAMERA_POS] = 0;
 		}
 		else {
-			PMData->PMCounter[4]++;
+			PMData->PMCounter[CAMERA_POS]++;
 		}
 	}
 	//receive from zmq

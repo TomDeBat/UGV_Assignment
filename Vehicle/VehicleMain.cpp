@@ -33,14 +33,14 @@ int main()
 
 		if (PMData->PMHeartbeat.Flags.VehicleControl == 1) {
 			PMData->PMHeartbeat.Flags.VehicleControl = 0;
-			PMData->PMCounter[2] = 0;
+			PMData->PMCounter[VEHICLE_POS] = 0;
 		}
 		else {
-			PMData->PMCounter[2]++;
-			Console::Write("PM Counter: {0:D}", PMData->PMCounter[2]);
-			if (PMData->PMCounter[2] > PM_WAIT) {
+			PMData->PMCounter[VEHICLE_POS]++;
+			Console::Write("PM Counter: {0:D}", PMData->PMCounter[VEHICLE_POS]);
+			if (PMData->PMCounter[VEHICLE_POS] > PM_WAIT) {
 				PMData->Shutdown.Status = 0xFF;
-				PMData->PMCounter[2] = 0;
+				PMData->PMCounter[VEHICLE_POS] = 0;
 				break;
 			}
 		}

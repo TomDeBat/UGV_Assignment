@@ -26,8 +26,8 @@ int main()
 	int Shutdown = 0x00;
 	QueryPerformanceFrequency((LARGE_INTEGER*)&Frequency);
 	//PMObj.SMCreate();
-	LaserSMObject.SMCreate();
-	//PMObj.SMAccess();
+	//LaserSMObject.SMCreate();
+	PMObj.SMAccess();
 	LaserSMObject.SMAccess();
 
 	ProcessManagement* PMData = (ProcessManagement*)PMObj.pData;
@@ -97,14 +97,14 @@ int main()
 
 		if (PMData->PMHeartbeat.Flags.Laser == 1) {
 			PMData->PMHeartbeat.Flags.Laser = 0;
-			PMData->PMCounter[0] = 0;
+			PMData->PMCounter[LASER_POS] = 0;
 		}
 		else {
-			PMData->PMCounter[0]++;
-			Console::Write("PM Counter: {0:D}", PMData->PMCounter[0]);
-			if (PMData->PMCounter[0] > PM_WAIT) {
+			PMData->PMCounter[LASER_POS]++;
+			Console::Write("PM Counter: {0:D}", PMData->PMCounter[LASER_POS]);
+			if (PMData->PMCounter[LASER_POS] > PM_WAIT) {
 				PMData->Shutdown.Status = 0xFF;
-				PMData->PMCounter[0] = 0;
+				PMData->PMCounter[LASER_POS] = 0;
 				break;
 			}
 		}
@@ -120,7 +120,7 @@ int main()
 		Stream->Write(SendData, 0, SendData->Length);
 		Stream->WriteByte(0x03); // End Transmission
 		// Wait for the server to prepare the data, 1 ms would be sufficient, but used 10 ms
-		System::Threading::Thread::Sleep(10);
+		System::Threading::Thread::Sleep(100);
 		// Read the incoming data
 		Stream->Read(ReadData, 0, ReadData->Length);
 		// Convert incoming data from an array of unsigned char bytes to an ASCII string
@@ -163,8 +163,8 @@ int main()
 	Client->Close();
 
 
-	Console::ReadKey();
-	Console::ReadKey();
+	//Console::ReadKey();
+	//Console::ReadKey();
 
 
 	// just to pause the actual thing

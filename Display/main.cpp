@@ -203,15 +203,15 @@ void idle() {
 
 	if (PMData->PMHeartbeat.Flags.Display == 1) {
 		PMData->PMHeartbeat.Flags.Display = 0;
-		PMData->PMCounter[1] = 0;
+		PMData->PMCounter[DISPLAY_POS] = 0;
 	}
 	else {
-		if (PMData->PMCounter[1] > PM_WAIT) {
+		if (PMData->PMCounter[DISPLAY_POS] > PM_WAIT) {
 			PMData->Shutdown.Status = 0xFF;
 			
 		}
 		else {
-			PMData->PMCounter[1]++;
+			PMData->PMCounter[DISPLAY_POS]++;
 		}
 	}
 
