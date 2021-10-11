@@ -24,20 +24,20 @@ int main()
 
 	int PortNumber = 23000;
 	String^ HostName = "z5209309\n";
-	//LaserClass.connect(HostName, PortNumber);
+	LaserClass.connect(HostName, PortNumber);
 
 	while(!LaserClass.getShutdownFlag()){
 		bool temp = true;
 		if (_kbhit() || LaserClass.setHeartbeat(temp) == 0) {
 			break;
 		}
-		//LaserClass.getData();
-		//LaserClass.checkData();
-		//LaserClass.sendDataToSharedMemory();
+		LaserClass.getData();
+		LaserClass.checkData();
+		LaserClass.sendDataToSharedMemory();
 	}
 
-	//Console::ReadKey();
-	//Console::ReadKey();
+	Console::ReadKey();
+	Console::ReadKey();
 
 
 

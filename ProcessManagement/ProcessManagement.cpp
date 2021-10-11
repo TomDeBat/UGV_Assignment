@@ -63,7 +63,7 @@ int main() {
 
 	PMData->PMHeartbeat.Status = 0xFF;
 	//Modulelist->Length
-	for (int i = 4; i < Modulelist->Length; i++) {
+	for (int i = 0; i < Modulelist->Length - 4; i++) {
 		//creates an array of all information processes
 			if (Process::GetProcessesByName(Modulelist[i])->Length == 0) {
 				ProcessList[i] = gcnew Process;
@@ -94,111 +94,111 @@ int main() {
 		Console::WriteLine("MODULE HEALTH CHECK UP:");
 		
 		
-		// Laser - critical
-		if (PMData->Heartbeat.Flags.Laser == 1) {
-			LaserCounter = 0;
-			Console::WriteLine("Laser: Alive");
-			PMData->Heartbeat.Flags.Laser = 0;
-		} else {
-			if (LaserCounter < LASER_WAIT) {
-				LaserCounter++;
-				Console::WriteLine("Laser: Waiting time " + LaserCounter);
-			} else {
-				Console::WriteLine("Laser: critical, total shutdown required");
-				PMData->Shutdown.Status = 0xFF;
-				break;
-			}
+		//// Laser - critical
+		//if (PMData->Heartbeat.Flags.Laser == 1) {
+		//	LaserCounter = 0;
+		//	Console::WriteLine("Laser: Alive");
+		//	PMData->Heartbeat.Flags.Laser = 0;
+		//} else {
+		//	if (LaserCounter < LASER_WAIT) {
+		//		LaserCounter++;
+		//		Console::WriteLine("Laser: Waiting time " + LaserCounter);
+		//	} else {
+		//		Console::WriteLine("Laser: critical, total shutdown required");
+		//		PMData->Shutdown.Status = 0xFF;
+		//		break;
+		//	}
 
 
-		}
-		
+		//}
+		//
 		
 		
 		// Display - non critical
-		if (PMData->Heartbeat.Flags.Display == 1) {
-			DisplayCounter = 0;
-			PMData->Heartbeat.Flags.Display = 0;
-			Console::WriteLine("Display: Alive");
-		}
-		else {
-			// checks if wait time has elapsed
-			if (DisplayCounter < DISPLAY_WAIT) {
-				DisplayCounter++;
-				Console::WriteLine("Display: Waiting time " + DisplayCounter);
-			}
-			else {
-				// checks if program is running
-				if (ProcessList[DISPLAY_POS]->HasExited) {
-					//if its not running start the program
-					Console::WriteLine("Display: program exited, starting up");
-					ProcessList[DISPLAY_POS]->Start();
-					DisplayCounter = 0;
-				}
-				else {
-					// Kill process then start running it again
-					Console::WriteLine("Display: program is being restarted");
-					ProcessList[DISPLAY_POS]->Kill();
-					ProcessList[DISPLAY_POS]->Start();
-					DisplayCounter = 0;
-				}
-			}
+		//if (PMData->Heartbeat.Flags.Display == 1) {
+		//	DisplayCounter = 0;
+		//	PMData->Heartbeat.Flags.Display = 0;
+		//	Console::WriteLine("Display: Alive");
+		//}
+		//else {
+		//	// checks if wait time has elapsed
+		//	if (DisplayCounter < DISPLAY_WAIT) {
+		//		DisplayCounter++;
+		//		Console::WriteLine("Display: Waiting time " + DisplayCounter);
+		//	}
+		//	else {
+		//		// checks if program is running
+		//		if (ProcessList[DISPLAY_POS]->HasExited) {
+		//			//if its not running start the program
+		//			Console::WriteLine("Display: program exited, starting up");
+		//			ProcessList[DISPLAY_POS]->Start();
+		//			DisplayCounter = 0;
+		//		}
+		//		else {
+		//			// Kill process then start running it again
+		//			Console::WriteLine("Display: program is being restarted");
+		//			ProcessList[DISPLAY_POS]->Kill();
+		//			ProcessList[DISPLAY_POS]->Start();
+		//			DisplayCounter = 0;
+		//		}
+		//	}
 
-		}
+		//}
 		
 		
-		// Vehicle Control - critical
-		if (PMData->Heartbeat.Flags.VehicleControl == 1) {
-			VehicleCounter = 0;
-			PMData->Heartbeat.Flags.VehicleControl = 0;
-			Console::WriteLine("Vehicle: Alive");
-		}
-		else {
-			if (VehicleCounter < VEHICLE_WAIT) {
-				VehicleCounter++;
-			}
-			else {
-				Console::WriteLine("Vehicle: critical, total shutdown required");
-				PMData->Shutdown.Status = 0xFF;
-				break;
-			}
+		//// Vehicle Control - critical
+		//if (PMData->Heartbeat.Flags.VehicleControl == 1) {
+		//	VehicleCounter = 0;
+		//	PMData->Heartbeat.Flags.VehicleControl = 0;
+		//	Console::WriteLine("Vehicle: Alive");
+		//}
+		//else {
+		//	if (VehicleCounter < VEHICLE_WAIT) {
+		//		VehicleCounter++;
+		//	}
+		//	else {
+		//		Console::WriteLine("Vehicle: critical, total shutdown required");
+		//		PMData->Shutdown.Status = 0xFF;
+		//		break;
+		//	}
 
-		}
-		
-		
+		//}
+		//
+		//
 
-		// GPS - non critical
-		if (PMData->Heartbeat.Flags.GPS == 1) {
-			GPSCounter = 0;
-			PMData->Heartbeat.Flags.GPS = 0;
-			Console::WriteLine("GPS: Alive");
-		}
-		else {
-			
-			// checks if wait time has elapsed
-			if (GPSCounter < GPS_WAIT) {
-				GPSCounter++;
-				Console::WriteLine("GPS: Waiting time " + GPSCounter);
-			}
-			else {
-				// checks if program is running
-				if (ProcessList[GPS_POS]->HasExited) {
-					//if its not running start the program
-					Console::WriteLine("GPS: program exited, starting up");
-					ProcessList[GPS_POS]->Start();
-					GPSCounter = 0;
-				}
-				else {
-					// Kill process then start running it again
-					Console::WriteLine("GPS: program is being restarted");
-					ProcessList[GPS_POS]->Kill();
-					ProcessList[GPS_POS]->Start();
-					Thread::Sleep(100);
-					GPSCounter = 0;
-				}
-			}
+		//// GPS - non critical
+		//if (PMData->Heartbeat.Flags.GPS == 1) {
+		//	GPSCounter = 0;
+		//	PMData->Heartbeat.Flags.GPS = 0;
+		//	Console::WriteLine("GPS: Alive");
+		//}
+		//else {
+		//	
+		//	// checks if wait time has elapsed
+		//	if (GPSCounter < GPS_WAIT) {
+		//		GPSCounter++;
+		//		Console::WriteLine("GPS: Waiting time " + GPSCounter);
+		//	}
+		//	else {
+		//		// checks if program is running
+		//		if (ProcessList[GPS_POS]->HasExited) {
+		//			//if its not running start the program
+		//			Console::WriteLine("GPS: program exited, starting up");
+		//			ProcessList[GPS_POS]->Start();
+		//			GPSCounter = 0;
+		//		}
+		//		else {
+		//			// Kill process then start running it again
+		//			Console::WriteLine("GPS: program is being restarted");
+		//			ProcessList[GPS_POS]->Kill();
+		//			ProcessList[GPS_POS]->Start();
+		//			Thread::Sleep(100);
+		//			GPSCounter = 0;
+		//		}
+		//	}
 
-		}
-		
+		//}
+		//
 		
 
 		

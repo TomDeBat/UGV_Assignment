@@ -31,9 +31,10 @@ int main(int argc, char** argv)
 	const int WINDOW_WIDTH = 800;
 	const int WINDOW_HEIGHT = 600;
 	
+	//PMObj.SMCreate();
 	PMObj.SMAccess();
 	PMData = (ProcessManagement*)PMObj.pData;
-
+	PMData->Shutdown.Flags.Camera = 0;
 	//GL Window setup
 	glutInit(&argc, (char**)(argv));
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
@@ -75,9 +76,10 @@ void display()
 
 void idle()
 {
+	
 	Console::WriteLine("The value " + PMData->Shutdown.Flags.Camera);
 	if (PMData->Shutdown.Flags.Camera) exit(0);
-	PMData->Heartbeat.Flags.Camera = 1;
+	//PMData->Heartbeat.Flags.Camera = 1;
 
 	if (PMData->PMHeartbeat.Flags.Camera == 1) {
 		PMData->PMHeartbeat.Flags.Camera = 0;

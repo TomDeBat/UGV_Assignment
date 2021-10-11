@@ -85,9 +85,10 @@ int main(int argc, char ** argv) {
 	const int WINDOW_WIDTH = 800;
 	const int WINDOW_HEIGHT = 600;
 
+	//PMObj.SMCreate();
 	PMObj.SMAccess();
 	PMData = (ProcessManagement*)PMObj.pData;
-
+	PMData->Shutdown.Flags.Display = 0;
 
 	glutInit(&argc, (char**)(argv));
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
@@ -197,18 +198,19 @@ double getTime()
 void idle() {
 
 	if (PMData->Shutdown.Flags.Display) exit(0);
-	//Console::WriteLine("I have reached here");
-	PMData->Heartbeat.Flags.Display = 1;
+	Console::WriteLine("I have reached here");
+	//PMData->PMHeartbeat.Flags.Display = 1; // this is for TESTING
 
 
 	if (PMData->PMHeartbeat.Flags.Display == 1) {
-		PMData->PMHeartbeat.Flags.Display = 0;
+		//PMData->PMHeartbeat.Flags.Display = 0;
 		PMData->PMCounter[DISPLAY_POS] = 0;
+		Console::WriteLine("ye");
 	}
 	else {
 		if (PMData->PMCounter[DISPLAY_POS] > PM_WAIT) {
 			PMData->Shutdown.Status = 0xFF;
-			
+			Console::WriteLine("oh no ");
 		}
 		else {
 			PMData->PMCounter[DISPLAY_POS]++;
