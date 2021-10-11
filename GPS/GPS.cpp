@@ -7,7 +7,15 @@ int GPS::connect(String^ hostName, int portNumber)
 }
 int GPS::setupSharedMemory() 
 {
-	// YOUR CODE HERE
+	ProcessManagementData = new SMObject(_TEXT("ProcessManagement"), sizeof(ProcessManagement));
+	SensorData = new SMObject(_TEXT("GPSSMObject"), sizeof(SM_GPS));
+	ProcessManagementData->SMCreate();
+	SensorData->SMCreate();
+	ProcessManagementData->SMAccess();
+	SensorData->SMAccess();
+	PMData = (ProcessManagement*)ProcessManagementData->pData;
+	GPSData = (SM_GPS*)SensorData->pData;
+	PMData->Shutdown.Flags.GPS = 0;
 	return 1;
 }
 int GPS::getData() 

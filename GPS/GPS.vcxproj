@@ -109,6 +109,8 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(solutionDir)\include</AdditionalIncludeDirectories>
+      <AdditionalUsingDirectories>$(SolutionDir)\dll</AdditionalUsingDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies />

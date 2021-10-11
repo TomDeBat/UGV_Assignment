@@ -1,13 +1,20 @@
-
+#pragma once
 #include <UGV_module.h>
+#include <SMObject.h>
 #include <smstructs.h>
+#using <System.dll>
+#include <Windows.h>
 
-#define CRC32_POLYNOMIAL 0xEDB88320L
 
-unsigned long CRC32Value(int i);
-unsigned long CalculateBlockCRC32(unsigned long ulCount, unsigned char* ucBuffer);
+using namespace System;
+using namespace System::Diagnostics;
+using namespace System::Threading;
+using namespace System::Net::Sockets;
+using namespace System::Net;
+using namespace System::Text;
 
-ref class GPS : public UGV_module
+
+ref class VehicleControl : public UGV_module
 {
 
 public:
@@ -18,15 +25,12 @@ public:
 	int sendDataToSharedMemory() override;
 	bool getShutdownFlag() override;
 	int setHeartbeat(bool heartbeat) override;
-	~GPS();
+	~VehicleControl();
 protected:
-	ProcessManagement* PMData;
-	SM_GPS* GPSData;
-	double TimeStamp;
-	__int64 Frequency;
-	__int64 Counter;
-	int Shutdown;
+
+
 	// YOUR CODE HERE (ADDITIONAL MEMBER VARIABLES THAT YOU MAY WANT TO ADD)
 
 };
+
 
