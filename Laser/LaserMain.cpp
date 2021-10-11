@@ -36,6 +36,8 @@ int main()
 		LaserClass.sendDataToSharedMemory();
 	}
 
+	LaserClass.~Laser();
+
 	Console::ReadKey();
 	Console::ReadKey();
 

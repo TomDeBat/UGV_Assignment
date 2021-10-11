@@ -79,7 +79,7 @@ int Laser::getData()
 	Stream->Write(SendData, 0, SendData->Length);
 	Stream->WriteByte(0x03); // End Transmission
 	// Wait for the server to prepare the data, 1 ms would be sufficient, but used 10 ms
-	System::Threading::Thread::Sleep(100);
+	System::Threading::Thread::Sleep(120);
 	// Read the incoming data
 	Stream->Read(ReadData, 0, ReadData->Length);
 	// Convert incoming data from an array of unsigned char bytes to an ASCII string
@@ -93,27 +93,29 @@ int Laser::checkData()
 {
 	array<String^>^ LaserData = ResponseData->Split(' ');
 	Console::WriteLine(LaserData[1]);
-	Console::WriteLine(LaserData[20]);
-	double StartAngle = System::Convert::ToInt32(LaserData[23], 16);
-	double AngularStep = System::Convert::ToInt32(LaserData[24], 16) / 10000.0;
-	double NumberData = System::Convert::ToInt32(LaserData[25], 16);
-	Console::WriteLine("The start angle: {0, 0:F0}", StartAngle);
-	Console::WriteLine("The step size: {0, 0:F3}", AngularStep);
-	Console::WriteLine("The number of data  points: {0, 0:F0}", NumberData);
+
+	if (LaserData[1] == "LMDscandata") {
+		Console::WriteLine(LaserData[20]);
+		double StartAngle = System::Convert::ToInt32(LaserData[23], 16);
+		double AngularStep = System::Convert::ToInt32(LaserData[24], 16) / 10000.0;
+		double NumberData = System::Convert::ToInt32(LaserData[25], 16);
+		Console::WriteLine("The start angle: {0, 0:F0}", StartAngle);
+		Console::WriteLine("The step size: {0, 0:F3}", AngularStep);
+		Console::WriteLine("The number of data  points: {0, 0:F0}", NumberData);
 
 
 
-	XRange = gcnew array<double>(NumberData);
-	YRange = gcnew array<double>(NumberData);
-	double temp, angle;
+		XRange = gcnew array<double>(NumberData);
+		YRange = gcnew array<double>(NumberData);
+		double temp, angle;
 
-	for (int i = 0; i < NumberData; i++) {
-		temp = System::Convert::ToInt32(LaserData[26 + i], 16);
-		XRange[i] = temp * cos(i * AngularStep * PI_DEF / 180);
-		YRange[i] = temp * sin(i * AngularStep * PI_DEF / 180);
-		Console::WriteLine("x:{0, 0:F4} y:{1, 0:F4}", XRange[i], YRange[i]);
+		for (int i = 0; i < NumberData; i++) {
+			temp = System::Convert::ToInt32(LaserData[26 + i], 16);
+			XRange[i] = temp * sin(i * AngularStep * PI_DEF / 180);
+			YRange[i] = -temp * cos(i * AngularStep * PI_DEF / 180);
+			Console::WriteLine("x:{0, 0:F4} y:{1, 0:F4}", XRange[i], YRange[i]);
+		}
 	}
-
 	// YOUR CODE HERE
 	return 1;
 }

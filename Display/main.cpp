@@ -199,11 +199,11 @@ void idle() {
 
 	if (PMData->Shutdown.Flags.Display) exit(0);
 	Console::WriteLine("I have reached here");
-	//PMData->PMHeartbeat.Flags.Display = 1; // this is for TESTING
+	PMData->Heartbeat.Flags.Display = 1;
 
 
 	if (PMData->PMHeartbeat.Flags.Display == 1) {
-		//PMData->PMHeartbeat.Flags.Display = 0;
+		PMData->PMHeartbeat.Flags.Display = 0;
 		PMData->PMCounter[DISPLAY_POS] = 0;
 		Console::WriteLine("ye");
 	}
