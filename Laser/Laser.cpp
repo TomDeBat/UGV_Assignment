@@ -160,4 +160,6 @@ int Laser::setHeartbeat(bool heartbeat)
 Laser::~Laser()
 {
 	// YOUR CODE HERE
+	Stream->Close();
+	Client->Close();
 }
