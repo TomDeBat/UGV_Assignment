@@ -77,7 +77,7 @@ void display()
 void idle()
 {
 	
-	Console::WriteLine("The value " + PMData->Shutdown.Flags.Camera);
+	//Console::WriteLine("The value " + PMData->Shutdown.Flags.Camera);
 	if (PMData->Shutdown.Flags.Camera) exit(0);
 	
 	PMData->Heartbeat.Flags.Camera = 1;
