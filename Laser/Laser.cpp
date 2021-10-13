@@ -21,7 +21,7 @@ int Laser::connect(String^ hostName, int portNumber)
 	AskScan = gcnew String("sRN LMDscandata");
 	StudID = gcnew String("5209309\n");
 	// String to store received data for display
-	Console::WriteLine("Hello THere");
+	//Console::WriteLine("Hello THere");
 
 	// Creat TcpClient object and connect to it
 	Client = gcnew TcpClient("192.168.1.200", portNumber);
@@ -63,8 +63,8 @@ int Laser::setupSharedMemory()
 {
 	ProcessManagementData = new SMObject(_TEXT("ProcessManagement"), sizeof(ProcessManagement));
 	SensorData = new SMObject(_TEXT("LaserSMObject"), sizeof(SM_Laser));
-	//ProcessManagementData->SMCreate();
-	//SensorData->SMCreate();
+	ProcessManagementData->SMCreate();
+	SensorData->SMCreate();
 	ProcessManagementData->SMAccess();
 	SensorData->SMAccess();
 	PMData =(ProcessManagement*)ProcessManagementData->pData;

@@ -240,8 +240,8 @@ int main() {
 
 	}
 
-	Console::ReadKey();
-	Console::ReadKey();
+	//Console::ReadKey();
+	//Console::ReadKey();
 
 	PMData->Shutdown.Status = 0xFF;// put in all other files by replacing Shutdown in the If statement (youll know when u see it otherwise 1:29:00 lecture 2)
 	// Initialization

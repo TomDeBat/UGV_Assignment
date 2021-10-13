@@ -30,9 +30,9 @@ protected:
 	ProcessManagement* PMData;
 	SM_Laser* LaserData;
 	int PortNumber;
-	TcpClient^ Client;
+	//TcpClient^ Client;
 	array<unsigned char>^ SendData; // Managed Memory - Data to send 
-	array<unsigned char>^ ReadData; // Managed Memory - Data to recieve
+	//array<unsigned char>^ ReadData; // Managed Memory - Data to recieve
 	String^ AskScan;
 	String^ StudID;
 	String^ ResponseData;
@@ -40,7 +40,7 @@ protected:
 	__int64 Frequency;
 	__int64 Counter;
 	int Shutdown;
-	NetworkStream^ Stream;
+	//NetworkStream^ Stream;
 	double StartAngle;
 	double AngularStep;
 	double NumberData;
