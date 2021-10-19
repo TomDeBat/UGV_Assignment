@@ -27,7 +27,13 @@ public:
 	int setHeartbeat(bool heartbeat) override;
 	~VehicleControl();
 protected:
-
+	ProcessManagement* PMData;
+	SM_VehicleControl* VehicleControl;
+	double TimeStamp;
+	__int64 Frequency;
+	__int64 Counter;
+	int Shutdown;
+	array<unsigned char>^ SendData = nullptr;
 
 	// YOUR CODE HERE (ADDITIONAL MEMBER VARIABLES THAT YOU MAY WANT TO ADD)
 

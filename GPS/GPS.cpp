@@ -22,33 +22,44 @@ struct GPSDataStruct;
 
 int GPS::connect(String^ hostName, int portNumber)
 {
-	Port = gcnew SerialPort;
-	PortName = gcnew String(hostName);
+	
 
 	SendData = gcnew array<unsigned char>(16);
 	ReadData = gcnew array<unsigned char>(224);
 
-	Port->PortName = PortName;
-	Port->BaudRate = 115200;
-	Port->StopBits = StopBits::One;
-	Port->DataBits = 8;
-	Port->Parity = Parity::None;
-	Port->Handshake = Handshake::None;
+	//Port = gcnew SerialPort;
+	//PortName = gcnew String(hostName);
 
-	// Set the read/write timeouts & buffer size
-	Port->ReadTimeout = 500;
-	Port->WriteTimeout = 500;
-	Port->ReadBufferSize = 224;
-	Port->WriteBufferSize = 1024;
+	//Port->PortName = PortName;
+	//Port->BaudRate = 115200;
+	//Port->StopBits = StopBits::One;
+	//Port->DataBits = 8;
+	//Port->Parity = Parity::None;
+	//Port->Handshake = Handshake::None;
 
-	Port->Open();
-	Port->Read(ReadData, 0, sizeof(GPSDataStruct));
+	//// Set the read/write timeouts & buffer size
+	//Port->ReadTimeout = 500;
+	//Port->WriteTimeout = 500;
+	//Port->ReadBufferSize = 224;
+	//Port->WriteBufferSize = 1024;
+
+	//Port->Open();
+	//Port->Read(ReadData, 0, sizeof(GPSDataStruct));
 
 	//ReadData = gcnew array<unsigned char>(112) { 0xaa, 0x44, 0x12, 0x1c, 0xd6, 0x02, 0x02, 0x20, 0x50, 0x00, 0x00, 0x00, 0x64, 0xb4, 0x94, 0x05, 0xf6, 0xc4, 0x39, 0x0b, 0x00, 0x00, 0x00, 0x00, 0x8c, 0xef, 0x81, 0x08, 0x00, 0x00, 0x00, 0x00, 0x32, 0x00, 0x00, 0x00, 0x38, 0x00, 0x00, 0x00, 0x48, 0x00, 0x00, 0x00, 0x76, 0xdf, 0xb9, 0x9e, 0xb3, 0xc8, 0x57, 0x41, 0xfd, 0xbb, 0x6c, 0xcd, 0xb4, 0x5a, 0x13, 0x41, 0x00, 0x00, 0x60, 0x07, 0xe8, 0x18, 0x5b, 0x40, 0x81, 0x7c, 0xa5, 0x41, 0x3d, 0x00, 0x00, 0x00, 0x07, 0xb1, 0x8a, 0x3c, 0xf4, 0x39, 0x03, 0x3d, 0x4c, 0xd7, 0x30, 0x3d, 0x41, 0x41, 0x41, 0x41, 0xcd, 0xcc, 0xac, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x09, 0x07, 0x07, 0x07, 0x00, 0x00, 0x00, 0x00, 0x04, 0xa3, 0xfd, 0xcc };
 
 	// does not require authentication like Laser
-	Stream = Client->GetStream();
+	Client = gcnew TcpClient("192.168.1.200", portNumber);
+	// Configure connection
+	Client->NoDelay = true;
+	Client->ReceiveTimeout = 500;//ms
+	Client->SendTimeout = 500;//ms
+	Client->ReceiveBufferSize = 1024;
+	Client->SendBufferSize = 1024;
 
+
+	Stream = Client->GetStream();
+	Console::Write(Stream->DataAvailable);
 	// YOUR CODE HERE
 	return 1;
 }
@@ -56,8 +67,8 @@ int GPS::setupSharedMemory()
 {
 	ProcessManagementData = new SMObject(_TEXT("ProcessManagement"), sizeof(ProcessManagement));
 	SensorData = new SMObject(_TEXT("GPSSMObject"), sizeof(SM_GPS));
-	ProcessManagementData->SMCreate();
-	SensorData->SMCreate();
+	//ProcessManagementData->SMCreate();
+	//SensorData->SMCreate();
 	ProcessManagementData->SMAccess();
 	SensorData->SMAccess();
 	PMData = (ProcessManagement*)ProcessManagementData->pData;
@@ -67,26 +78,28 @@ int GPS::setupSharedMemory()
 }
 int GPS::getData() 
 {	
-	GPSDataStruct* Novatel = new GPSDataStruct;
+	//GPSDataStruct* Novatel = new GPSDataStruct;
+	GPSDataStruct Novatel;
 	BytePtr = (unsigned char*)&Novatel;
 	startBytePtr = BytePtr;
 	int debugging = 1;
+	
 	//Stream->DataAvailable <- put this back in for main thing
 	if (Stream->DataAvailable) {
-
-		//Stream->Read(ReadData, 0, ReadData->Length);
+		Stream->Read(ReadData, 0, ReadData->Length);
+		//
 		Start = checkData();
 		for (int i = Start; i < Start + sizeof(Novatel); i++) {
 			*(BytePtr++) = ReadData[i];
 
 		}
 
-		if (Novatel->CRC == CalculateBlockCRC32(sizeof(GPSDataStruct) - 4, BytePtr)) {
-			tempEasting = Novatel->Easting;
-			tempNorthing = Novatel->Northing;
-			tempHeight = Novatel->Height;
-			Console::WriteLine("Northing: {0,10:F3}\tEasting: {1,10:F3}\tHeight: {2,10:F3}", Novatel->Northing,
-				Novatel->Easting, Novatel->Height);
+		if (Novatel.CRC == CalculateBlockCRC32(sizeof(GPSDataStruct) - 4, startBytePtr)) {
+			tempEasting = Novatel.Easting;
+			tempNorthing = Novatel.Northing;
+			tempHeight = Novatel.Height;
+			Console::WriteLine("Northing: {0,10:F3}  Easting: {1,10:F3}  Height: {2,10:F3}", Novatel.Northing,
+				Novatel.Easting, Novatel.Height);
 			sendDataToSharedMemory();
 
 
@@ -135,7 +148,8 @@ bool GPS::getShutdownFlag()
 int GPS::setHeartbeat(bool heartbeat) 
 {
 	PMData->Heartbeat.Flags.GPS = 1; // Set heartbeat flag
-
+	//PMData->PMHeartbeat.Flags.GPS = 1; // FOR DEBUGGING
+	Sleep(100);
 	if (PMData->PMHeartbeat.Flags.GPS == 1) {
 		PMData->PMHeartbeat.Flags.GPS = 0;
 		PMData->PMCounter[GPS_POS] = 0;
@@ -144,7 +158,7 @@ int GPS::setHeartbeat(bool heartbeat)
 		Console::WriteLine("PM Counter: {0:D}", PMData->PMCounter[GPS_POS]);
 		PMData->PMCounter[GPS_POS]++;
 		if (PMData->PMCounter[GPS_POS] > PM_WAIT) {
-			//PMData->Shutdown.Status = 0xFF;
+			PMData->Shutdown.Status = 0xFF;
 			return 0;
 		}
 	}

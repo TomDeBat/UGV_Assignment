@@ -16,11 +16,12 @@ int main()
 {
 	GPS GPSClass;
 
+	Sleep(100);
 	GPSClass.setupSharedMemory();
 
 	int PortNumber = 24000;
 	String^ HostName = "COM1";
-	//GPSClass.connect(HostName, PortNumber);
+	GPSClass.connect(HostName, PortNumber);
 
 	while (!GPSClass.getShutdownFlag()) {
 		bool temp = true;

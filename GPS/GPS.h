@@ -56,6 +56,8 @@ protected:
 	SerialPort^ Port = nullptr;
 	String^ PortName = nullptr;
 	array<unsigned char>^ SendData = nullptr;
+	//NetworkStream^ Stream;
+
 
 	// YOUR CODE HERE (ADDITIONAL MEMBER VARIABLES THAT YOU MAY WANT TO ADD)
 
