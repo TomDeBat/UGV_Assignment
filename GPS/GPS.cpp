@@ -1,7 +1,54 @@
 #include "GPS.h"
+#using <System.dll>
+#include <Windows.h>
+#include <conio.h>
+#include <math.h>
+
+#include <SMObject.h>
+#include <smstructs.h>
+
+using namespace System;
+using namespace System::IO::Ports;
+using namespace System::Diagnostics;
+using namespace System::Threading;
+using namespace System::Net::Sockets;
+using namespace System::Net;
+using namespace System::Text;
+
+struct GPSDataStruct;
+
+
+
 
 int GPS::connect(String^ hostName, int portNumber)
 {
+	Port = gcnew SerialPort;
+	PortName = gcnew String(hostName);
+
+	SendData = gcnew array<unsigned char>(16);
+	ReadData = gcnew array<unsigned char>(224);
+
+	Port->PortName = PortName;
+	Port->BaudRate = 115200;
+	Port->StopBits = StopBits::One;
+	Port->DataBits = 8;
+	Port->Parity = Parity::None;
+	Port->Handshake = Handshake::None;
+
+	// Set the read/write timeouts & buffer size
+	Port->ReadTimeout = 500;
+	Port->WriteTimeout = 500;
+	Port->ReadBufferSize = 224;
+	Port->WriteBufferSize = 1024;
+
+	Port->Open();
+	Port->Read(ReadData, 0, sizeof(GPSDataStruct));
+
+	//ReadData = gcnew array<unsigned char>(112) { 0xaa, 0x44, 0x12, 0x1c, 0xd6, 0x02, 0x02, 0x20, 0x50, 0x00, 0x00, 0x00, 0x64, 0xb4, 0x94, 0x05, 0xf6, 0xc4, 0x39, 0x0b, 0x00, 0x00, 0x00, 0x00, 0x8c, 0xef, 0x81, 0x08, 0x00, 0x00, 0x00, 0x00, 0x32, 0x00, 0x00, 0x00, 0x38, 0x00, 0x00, 0x00, 0x48, 0x00, 0x00, 0x00, 0x76, 0xdf, 0xb9, 0x9e, 0xb3, 0xc8, 0x57, 0x41, 0xfd, 0xbb, 0x6c, 0xcd, 0xb4, 0x5a, 0x13, 0x41, 0x00, 0x00, 0x60, 0x07, 0xe8, 0x18, 0x5b, 0x40, 0x81, 0x7c, 0xa5, 0x41, 0x3d, 0x00, 0x00, 0x00, 0x07, 0xb1, 0x8a, 0x3c, 0xf4, 0x39, 0x03, 0x3d, 0x4c, 0xd7, 0x30, 0x3d, 0x41, 0x41, 0x41, 0x41, 0xcd, 0xcc, 0xac, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x09, 0x07, 0x07, 0x07, 0x00, 0x00, 0x00, 0x00, 0x04, 0xa3, 0xfd, 0xcc };
+
+	// does not require authentication like Laser
+	Stream = Client->GetStream();
+
 	// YOUR CODE HERE
 	return 1;
 }
@@ -19,33 +66,97 @@ int GPS::setupSharedMemory()
 	return 1;
 }
 int GPS::getData() 
-{
+{	
+	GPSDataStruct* Novatel = new GPSDataStruct;
+	BytePtr = (unsigned char*)&Novatel;
+	startBytePtr = BytePtr;
+	int debugging = 1;
+	//Stream->DataAvailable <- put this back in for main thing
+	if (Stream->DataAvailable) {
+
+		//Stream->Read(ReadData, 0, ReadData->Length);
+		Start = checkData();
+		for (int i = Start; i < Start + sizeof(Novatel); i++) {
+			*(BytePtr++) = ReadData[i];
+
+		}
+
+		if (Novatel->CRC == CalculateBlockCRC32(sizeof(GPSDataStruct) - 4, BytePtr)) {
+			tempEasting = Novatel->Easting;
+			tempNorthing = Novatel->Northing;
+			tempHeight = Novatel->Height;
+			Console::WriteLine("Northing: {0,10:F3}\tEasting: {1,10:F3}\tHeight: {2,10:F3}", Novatel->Northing,
+				Novatel->Easting, Novatel->Height);
+			sendDataToSharedMemory();
+
+
+		}
+	}
 	// YOUR CODE HERE
 	return 1;
 }
+
 int GPS::checkData() 
 {
+	// run this first before getData - checks when valid data stream occurs
 	// YOUR CODE HERE
-	return 1;
+	unsigned int Header = 0;
+	int i = 0;
+	unsigned char Data;
+
+	do
+	{
+		Data = ReadData[i++];
+		Console::WriteLine("Data Output: {0,5:F3}", Data);
+		Header = ((Header << 8) | Data);
+	} while (Header != 0xaa44121c);
+
+	return i - 4;
 }
+
 int GPS::sendDataToSharedMemory() 
 {
+	GPSData->easting = tempEasting;
+	GPSData->northing = tempNorthing;
+	GPSData->height = tempHeight;
 	// YOUR CODE HERE
 	return 1;
 }
+
 bool GPS::getShutdownFlag() 
 {
-	// YOUR CODE HERE
-	return 1;
+	bool temp = false;
+	if (PMData->Shutdown.Flags.GPS == 1) {
+		temp = true;
+	}
+	return temp;
 }
+
 int GPS::setHeartbeat(bool heartbeat) 
 {
-	// YOUR CODE HERE
+	PMData->Heartbeat.Flags.GPS = 1; // Set heartbeat flag
+
+	if (PMData->PMHeartbeat.Flags.GPS == 1) {
+		PMData->PMHeartbeat.Flags.GPS = 0;
+		PMData->PMCounter[GPS_POS] = 0;
+	}
+	else {
+		Console::WriteLine("PM Counter: {0:D}", PMData->PMCounter[GPS_POS]);
+		PMData->PMCounter[GPS_POS]++;
+		if (PMData->PMCounter[GPS_POS] > PM_WAIT) {
+			//PMData->Shutdown.Status = 0xFF;
+			return 0;
+		}
+	}
 	return 1;
 }
+
 GPS::~GPS()
 {
 	// YOUR CODE HERE
+	Stream->Close();
+	Client->Close();
+
 }
 
 // verify the GPS data has been recieved by the code directly
