@@ -34,7 +34,10 @@ protected:
 	__int64 Counter;
 	int Shutdown;
 	array<unsigned char>^ SendData = nullptr;
-
+	String^ AskScan;
+	String^ StudID;
+	String^ ResponseData;
+	String^ VehicleInput;
 	// YOUR CODE HERE (ADDITIONAL MEMBER VARIABLES THAT YOU MAY WANT TO ADD)
 
 };

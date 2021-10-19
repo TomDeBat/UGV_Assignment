@@ -55,7 +55,8 @@ protected:
 	double tempHeight;
 	SerialPort^ Port = nullptr;
 	String^ PortName = nullptr;
-	array<unsigned char>^ SendData = nullptr;
+	array<unsigned char>^ SendData;
+
 	//NetworkStream^ Stream;
 
 

@@ -2,7 +2,44 @@
 
 int VehicleControl::connect(String^ hostName, int portNumber)
 {
-	// YOUR CODE HERE
+	//AskScan = gcnew String("sRN LMDscandata");
+	StudID = gcnew String("5209309\n");
+	// String to store received data for display
+	//Console::WriteLine("Hello THere");
+
+	// Creat TcpClient object and connect to it
+	Client = gcnew TcpClient("192.168.1.200", portNumber);
+	// Configure connection - client settings
+	Client->NoDelay = true;
+	Client->ReceiveTimeout = 500;//ms
+	Client->SendTimeout = 500;//ms
+	Client->ReceiveBufferSize = 1024;
+	Client->SendBufferSize = 1024;
+
+	// unsigned char arrays of 16 bytes each are created on managed heap
+	SendData = gcnew array<unsigned char>(16);
+	ReadData = gcnew array<unsigned char>(2500);
+
+
+
+	// Get the network streab object associated with client so we 
+	// can use it to read and write
+	Stream = Client->GetStream(); // means of transmitting
+
+		// Convert string command to an array of unsigned char
+	SendData = System::Text::Encoding::ASCII->GetBytes(StudID); // converting the ask scan string from ASCII into Bytes
+
+	// Authenticate user
+	Stream->Write(SendData, 0, SendData->Length);
+	// Wait for the server to prepare the data, 1 ms would be sufficient, but used 10 ms
+	System::Threading::Thread::Sleep(10);
+	// Read the incoming data
+	Stream->Read(ReadData, 0, ReadData->Length);
+	ResponseData = System::Text::Encoding::ASCII->GetString(ReadData);
+	Console::WriteLine(ResponseData);
+	//Console::ReadKey();
+	//SendData = System::Text::Encoding::ASCII->GetBytes(AskScan);
+
 	return 1;
 }
 int VehicleControl::setupSharedMemory()
@@ -21,6 +58,7 @@ int VehicleControl::setupSharedMemory()
 }
 int VehicleControl::getData()
 {
+	VehicleInput = gcnew String("# " + )
 	// YOUR CODE HERE
 	return 1;
 }

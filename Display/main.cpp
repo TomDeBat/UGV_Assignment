@@ -58,6 +58,8 @@ void special_keyup(int keycode, int x, int y);
 void mouse(int button, int state, int x, int y);
 void dragged(int x, int y);
 void motion(int x, int y);
+void drawLaser();
+void drawGPS();
 
 using namespace std;
 using namespace scos;
@@ -77,7 +79,13 @@ double speed = 0;
 double steering = 0;
 
 SMObject PMObj(TEXT("ProcessManagement"), sizeof(ProcessManagement));
+SMObject LaserSMObject(TEXT("LaserSMObject"), sizeof(SM_Laser));
+SMObject GPSSMObject(TEXT("GPSSMObject"), sizeof(SM_GPS));
+SMObject VehicleSMObject(TEXT("VehicleSMObject"), sizeof(SM_VehicleControl));
 ProcessManagement* PMData = nullptr;
+SM_Laser* LaserData = nullptr;
+SM_GPS* GPSData = nullptr;
+SM_VehicleControl* VehicleData = nullptr;
 
 //int _tmain(int argc, _TCHAR* argv[]) {
 int main(int argc, char ** argv) {
@@ -87,7 +95,18 @@ int main(int argc, char ** argv) {
 
 	//PMObj.SMCreate();
 	PMObj.SMAccess();
+	//LaserSMObject.SMCreate();
+	LaserSMObject.SMAccess();
+	//GPSSMObject.SMCreate();
+	GPSSMObject.SMAccess();
+	//VehicleSMObject.SMCreate();
+	VehicleSMObject.SMAccess();
+
 	PMData = (ProcessManagement*)PMObj.pData;
+	LaserData = (SM_Laser*)LaserSMObject.pData;
+	GPSData = (SM_GPS*)GPSSMObject.pData;
+	VehicleData = (SM_VehicleControl*)VehicleSMObject.pData;
+
 	PMData->Shutdown.Flags.Display = 0;
 
 	glutInit(&argc, (char**)(argv));
@@ -160,6 +179,8 @@ void display() {
 
 	}
 
+	drawLaser();
+	
 
 	// draw HUD
 	HUD::Draw();
@@ -167,6 +188,31 @@ void display() {
 	glutSwapBuffers();
 };
 
+void drawLaser() {
+	static GLUquadric* laserQuad = gluNewQuadric();
+	double x = vehicle->getX(), y = vehicle->getY(), z = vehicle->getZ();
+	glPushMatrix();
+	for (int i = 0; i < STANDARD_LASER_LENGTH; i++) {
+		glTranslatef(LaserData->x[i]/1000 + x, 0.3, LaserData->y[i]/1000 + y);
+		glPushMatrix();
+		gluCylinder(laserQuad, 0.2, 0.2, 1, 1, 1);
+		glPopMatrix();
+	}
+
+	glPopMatrix();
+
+}
+
+void drawGPS() {
+	glColor3f(0.0, 1.0, 0.0);
+	glLineWidth(2.5);
+	glBegin(GL_LINES);
+	glVertex3f(GPSData->northing, GPSData->easting, GPSData->height);
+	glEnd();
+
+
+
+}
 void reshape(int width, int height) {
 
 	Camera::get()->setWindowDimensions(width, height);
