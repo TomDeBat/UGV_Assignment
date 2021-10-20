@@ -23,7 +23,7 @@ int main()
 	LaserClass.setupSharedMemory();
 
 	int PortNumber = 23000;
-	String^ HostName = "z5209309\n";
+	String^ HostName = "5209309\n";
 	LaserClass.connect(HostName, PortNumber);
 
 	while(!LaserClass.getShutdownFlag()){

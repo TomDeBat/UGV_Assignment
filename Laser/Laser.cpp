@@ -112,8 +112,8 @@ int Laser::checkData()
 		for (int i = 0; i < NumberData; i++) {
 			temp = System::Convert::ToInt32(LaserData[26 + i], 16);
 			XRange[i] = temp * sin(i * AngularStep * PI_DEF / 180);
-			YRange[i] = -temp * cos(i * AngularStep * PI_DEF / 180);
-			Console::WriteLine("x:{0, 0:F4} y:{1, 0:F4}", XRange[i], YRange[i]);
+			YRange[i] = temp * cos(i * AngularStep * PI_DEF / 180);
+			
 		}
 	}
 	// YOUR CODE HERE
@@ -121,10 +121,10 @@ int Laser::checkData()
 }
 int Laser::sendDataToSharedMemory()
 {
-
-	for (int i = 0; i < NumberData; i++) {
+	for (int i = 0; i < STANDARD_LASER_LENGTH; i++) {
 		LaserData->x[i] = XRange[i];
 		LaserData->y[i] = YRange[i];
+		Console::WriteLine("x:{0, 0:F4} y:{1, 0:F4}", XRange[i], YRange[i]);
 	}
 	// YOUR CODE HERE
 	return 1;

@@ -16,7 +16,7 @@ int main()
 {
 	GPS GPSClass;
 
-	Sleep(100);
+	//Sleep(100);
 	GPSClass.setupSharedMemory();
 
 	int PortNumber = 24000;

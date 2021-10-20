@@ -46,6 +46,9 @@
 #include "Messages.hpp"
 #include "HUD.hpp"
 
+#define DEGTORAD (3.141592765 / 180.0)
+
+
 void display();
 void reshape(int width, int height);
 void idle();
@@ -92,14 +95,19 @@ int main(int argc, char ** argv) {
 
 	const int WINDOW_WIDTH = 800;
 	const int WINDOW_HEIGHT = 600;
-
+	//Console::WriteLine("set up shared memory");
+	// 
 	//PMObj.SMCreate();
-	PMObj.SMAccess();
 	//LaserSMObject.SMCreate();
-	LaserSMObject.SMAccess();
 	//GPSSMObject.SMCreate();
-	GPSSMObject.SMAccess();
 	//VehicleSMObject.SMCreate();
+
+	PMObj.SMAccess();
+	
+	LaserSMObject.SMAccess();
+
+	GPSSMObject.SMAccess();
+
 	VehicleSMObject.SMAccess();
 
 	PMData = (ProcessManagement*)PMObj.pData;
@@ -155,6 +163,7 @@ void display() {
 	// -------------------------------------------------------------------------
 	//  This method is the main draw routine. 
 	// -------------------------------------------------------------------------
+	Console::WriteLine("yo doggy");
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -180,7 +189,7 @@ void display() {
 	}
 
 	drawLaser();
-	
+	drawGPS();
 
 	// draw HUD
 	HUD::Draw();
@@ -190,29 +199,65 @@ void display() {
 
 void drawLaser() {
 	static GLUquadric* laserQuad = gluNewQuadric();
-	double x = vehicle->getX(), y = vehicle->getY(), z = vehicle->getZ();
+	double x = 0, y = vehicle->getY() + 0.03, z = 0;
 	glPushMatrix();
-	for (int i = 0; i < STANDARD_LASER_LENGTH; i++) {
-		glTranslatef(LaserData->x[i]/1000 + x, 0.3, LaserData->y[i]/1000 + y);
+	for (int i = 1; i < STANDARD_LASER_LENGTH; i++) {
+		glColor3f(0.3, 0.7, 0.8);
+		glTranslatef(LaserData->x[i]/1000 - x, y, LaserData->y[i]/1000 - z);
+		x = LaserData->x[i] / 1000;
+		z = LaserData->y[i] / 1000;
+		y = 0;
+		Console::WriteLine(" {0, 4:F3}  {1, 4:F3}  {2, 4:F3} ", LaserData->x[i] / 1000 + x, 0.3, LaserData->y[i] / 1000 + y);
 		glPushMatrix();
-		gluCylinder(laserQuad, 0.2, 0.2, 1, 1, 1);
+		glRotatef(-90, 1, 0, 0);
+		gluCylinder(laserQuad, 0.02, 0.02, 1, 12, 1);
 		glPopMatrix();
 	}
 
 	glPopMatrix();
+	glEnd();
 
 }
 
 void drawGPS() {
-	glColor3f(0.0, 1.0, 0.0);
-	glLineWidth(2.5);
-	glBegin(GL_LINES);
-	glVertex3f(GPSData->northing, GPSData->easting, GPSData->height);
-	glEnd();
 
+	Camera::get()->switchTo2DDrawing();
+	int winWidthOff = (Camera::get()->getWindowWidth() - 800) * .5;
+	if (winWidthOff < 0)
+		winWidthOff = 0;
 
+	glColor3f(0.3, 0.7, 0.4);
+	double x = 130 + winWidthOff;
+	double y = 600;
+	char GPSLabel[250];
+	sprintf(GPSLabel, "Northing: %.4f  Easting: %.4f  Height: %.4f", GPSData->northing,
+		GPSData->easting, GPSData->height);
+
+	double r = 4;
+
+	glPushMatrix();
+	double r1 = r;
+	double r2 = r * 1.05;
+
+	const double centerR = -90;
+	const double startR = centerR - 50;
+	const double endR = centerR + 50;
+
+	glTranslatef(x, y, 0);
+	glDisable(GL_LIGHTING);
+
+	y = sin((startR)*DEGTORAD);
+	// text label
+	//renderString(label, strlen(label) * 10 * -.25, -r1 + 20, GLUT_BITMAP_HELVETICA_10);
+	HUD::RenderString(GPSLabel, strlen(GPSLabel) * 10 * -.25, (r1 - 20) * y - 20, GLUT_BITMAP_HELVETICA_18);
+
+	glPopMatrix();
+
+	Camera::get()->switchTo3DDrawing();
 
 }
+
+
 void reshape(int width, int height) {
 
 	Camera::get()->setWindowDimensions(width, height);
@@ -244,19 +289,19 @@ double getTime()
 void idle() {
 
 	if (PMData->Shutdown.Flags.Display) exit(0);
-	Console::WriteLine("I have reached here");
+	//Console::WriteLine("I have reached here");
 	PMData->Heartbeat.Flags.Display = 1;
-
+	//PMData->PMHeartbeat.Flags.Display = 1; // for debugging
 
 	if (PMData->PMHeartbeat.Flags.Display == 1) {
 		PMData->PMHeartbeat.Flags.Display = 0;
 		PMData->PMCounter[DISPLAY_POS] = 0;
-		Console::WriteLine("ye");
+		//Console::WriteLine("ye");
 	}
 	else {
 		if (PMData->PMCounter[DISPLAY_POS] > PM_WAIT) {
 			PMData->Shutdown.Status = 0xFF;
-			Console::WriteLine("oh no ");
+			//Console::WriteLine("Complete");
 		}
 		else {
 			PMData->PMCounter[DISPLAY_POS]++;
@@ -291,19 +336,23 @@ void idle() {
 	steering = 0;
 
 	if (KeyManager::get()->isSpecialKeyPressed(GLUT_KEY_LEFT)) {
-		steering = Vehicle::MAX_LEFT_STEERING_DEGS * -1;   
+		steering = Vehicle::MAX_LEFT_STEERING_DEGS * -1;
+		VehicleData->Steering = steering;
 	}
 
 	if (KeyManager::get()->isSpecialKeyPressed(GLUT_KEY_RIGHT)) {
 		steering = Vehicle::MAX_RIGHT_STEERING_DEGS * -1;
+		VehicleData->Steering = steering;
 	}
 
 	if (KeyManager::get()->isSpecialKeyPressed(GLUT_KEY_UP)) {
 		speed = Vehicle::MAX_FORWARD_SPEED_MPS;
+		VehicleData->Speed = speed;
 	}
 
 	if (KeyManager::get()->isSpecialKeyPressed(GLUT_KEY_DOWN)) {
 		speed = Vehicle::MAX_BACKWARD_SPEED_MPS;
+		VehicleData->Speed = speed;
 	}
 
 

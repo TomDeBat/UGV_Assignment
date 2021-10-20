@@ -1,7 +1,7 @@
 #using <System.dll>
 #include <Windows.h>
 #include <conio.h>
-
+#include "VehicleControl.h" //include from the same directory you are in
 
 #include <SMObject.h>
 #include <smstructs.h>
@@ -12,46 +12,29 @@ using namespace System::Threading;
 
 int main()
 {
-	//Declaration
-	SMObject PMObj(TEXT("ProcessManagement"), sizeof(ProcessManagement));
-	SMObject VehicleSMObject(TEXT("VehicleSMObject"), sizeof(SM_VehicleControl));
-	//SM Creation and seeking access
-	double TimeStamp;
-	__int64 Frequency, Counter;
-	int Shutdown = 0x00;
+	VehicleControl VehicleClass;
 
-	QueryPerformanceFrequency((LARGE_INTEGER*)&Frequency);
-	PMObj.SMAccess();
-	VehicleSMObject.SMAccess();
-	ProcessManagement* PMData = (ProcessManagement*)PMObj.pData;
+	//Sleep(100);
+	VehicleClass.setupSharedMemory();
 
-	PMData->Shutdown.Flags.VehicleControl = 0;
+	int PortNumber = 25000;
+	String^ HostName = "5209309\n";
+	VehicleClass.connect(HostName, PortNumber);
 
-	while (!PMData->Shutdown.Flags.VehicleControl)
-	{
-		PMData->Heartbeat.Flags.VehicleControl = 1; // Set heartbeat flag
-
-		if (PMData->PMHeartbeat.Flags.VehicleControl == 1) {
-			PMData->PMHeartbeat.Flags.VehicleControl = 0;
-			PMData->PMCounter[VEHICLE_POS] = 0;
-		}
-		else {
-			PMData->PMCounter[VEHICLE_POS]++;
-			Console::Write("PM Counter: {0:D}", PMData->PMCounter[VEHICLE_POS]);
-			if (PMData->PMCounter[VEHICLE_POS] > PM_WAIT) {
-				PMData->Shutdown.Status = 0xFF;
-				PMData->PMCounter[VEHICLE_POS] = 0;
-				break;
-			}
-		}
-		QueryPerformanceCounter((LARGE_INTEGER*)&Counter);
-		TimeStamp = (double)Counter / (double)Frequency * 1000000; // ms
-		Console::WriteLine("VehicleControl time stamp    : {0,12:F3} {1,12:X2}", TimeStamp, Shutdown);
-		Thread::Sleep(25);
-
-		if (_kbhit())
+	while (!VehicleClass.getShutdownFlag()) {
+		bool temp = true;
+		if (_kbhit() || VehicleClass.setHeartbeat(temp) == 0) {
 			break;
+		}
+		VehicleClass.getData();
+		VehicleClass.sendDataToSharedMemory();
 	}
+
+	VehicleClass.~VehicleControl();
+
+	Console::ReadKey();
+	Console::ReadKey();
+
 
 	return 0;
 }
