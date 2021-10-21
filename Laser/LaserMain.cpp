@@ -38,8 +38,8 @@ int main()
 
 	LaserClass.~Laser();
 
-	Console::ReadKey();
-	Console::ReadKey();
+	//Console::ReadKey();
+	//Console::ReadKey();
 
 
 

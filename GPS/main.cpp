@@ -34,8 +34,8 @@ int main()
 
 	GPSClass.~GPS();
 
-	Console::ReadKey();
-	Console::ReadKey();
+	//Console::ReadKey();
+	//Console::ReadKey();
 
 	return 0;
 }
