@@ -63,7 +63,7 @@ int main() {
 
 	PMData->PMHeartbeat.Status = 0xFF;
 	//Modulelist->Length
-	for (int i = 0; i < Modulelist->Length; i++) {
+	for (int i =0; i < Modulelist->Length; i++) {
 		//creates an array of all information processes
 			if (Process::GetProcessesByName(Modulelist[i])->Length == 0) {
 				ProcessList[i] = gcnew Process;
@@ -240,8 +240,8 @@ int main() {
 
 	}
 
-	//Console::ReadKey();
-	//Console::ReadKey();
+	Console::ReadKey();
+	Console::ReadKey();
 
 	PMData->Shutdown.Status = 0xFF;// put in all other files by replacing Shutdown in the If statement (youll know when u see it otherwise 1:29:00 lecture 2)
 	// Initialization
