@@ -32,8 +32,8 @@ int main()
 
 	VehicleClass.~VehicleControl();
 
-	Console::ReadKey();
-	Console::ReadKey();
+	//Console::ReadKey();
+	//Console::ReadKey();
 
 
 	return 0;
