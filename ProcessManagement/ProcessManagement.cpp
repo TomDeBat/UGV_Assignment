@@ -65,7 +65,7 @@ int main() {
 	//Modulelist->Length
 	for (int i =0; i < Modulelist->Length; i++) {
 		//creates an array of all information processes
-			if (Process::GetProcessesByName(Modulelist[i])->Length == 0) {
+			//if (Process::GetProcessesByName(Modulelist[i])->Length == 0) {
 				ProcessList[i] = gcnew Process;
 				ProcessList[i]->StartInfo->FileName = Modulelist[i];
 				Console::WriteLine("The process " + Modulelist[i]);
@@ -73,9 +73,9 @@ int main() {
 				//ProcessList[i]->Kill();
 				ProcessList[i]->Start();
 				Console::WriteLine("The process " + Modulelist[i] + ".exe started");
-				Thread::Sleep(100);
+				Thread::Sleep(800);
 
-			}
+			//}
 	}
 	// need to deal with priorities
 	//Main Loop
@@ -110,9 +110,9 @@ int main() {
 
 
 		}
-		
-		
-		
+		//
+		//
+		//
 		 //Display - non critical
 		if (PMData->Heartbeat.Flags.Display == 1) {
 			DisplayCounter = 0;
@@ -202,7 +202,7 @@ int main() {
 		
 
 		
-		 // - non critical
+		 // Camera - non critical
 		if (PMData->Heartbeat.Flags.Camera == 1) {
 			CameraCounter = 0;
 			PMData->Heartbeat.Flags.Camera = 0;

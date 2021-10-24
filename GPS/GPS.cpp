@@ -94,12 +94,13 @@ int GPS::getData()
 
 		}
 
-		if (Novatel.CRC == CalculateBlockCRC32(sizeof(GPSDataStruct) - 4, startBytePtr)) {
+		unsigned long temp = CalculateBlockCRC32(sizeof(GPSDataStruct) - 4, startBytePtr);
+		if (Novatel.CRC == temp) {
 			tempEasting = Novatel.Easting;
 			tempNorthing = Novatel.Northing;
 			tempHeight = Novatel.Height;
-			Console::WriteLine("Northing: {0,10:F3}  Easting: {1,10:F3}  Height: {2,10:F3} CRC: {3,10:F3}", Novatel.Northing,
-				Novatel.Easting, Novatel.Height, Novatel.CRC);
+			Console::WriteLine("Northing: {0,10:F3}  Easting: {1,10:F3}  Height: {2,10:F3} CRC: {3, 10:X}", Novatel.Northing,
+				Novatel.Easting, Novatel.Height, temp);
 			sendDataToSharedMemory();
 
 

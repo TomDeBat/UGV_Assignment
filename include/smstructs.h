@@ -18,11 +18,11 @@ using namespace System::Text;
 
 
 #define STANDARD_LASER_LENGTH 361
-#define LASER_WAIT 60
-#define GPS_WAIT 60
-#define VEHICLE_WAIT 60
-#define CAMERA_WAIT 60
-#define DISPLAY_WAIT 100
+#define LASER_WAIT 30
+#define GPS_WAIT 30
+#define VEHICLE_WAIT 30
+#define CAMERA_WAIT 30
+#define DISPLAY_WAIT 30
 #define PM_WAIT 100
 
 #define LASER_POS 4

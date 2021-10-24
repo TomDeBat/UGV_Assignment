@@ -337,26 +337,23 @@ void idle() {
 
 	if (KeyManager::get()->isSpecialKeyPressed(GLUT_KEY_LEFT)) {
 		steering = Vehicle::MAX_LEFT_STEERING_DEGS * -1;
-		VehicleData->Steering = steering;
 	}
 
 	if (KeyManager::get()->isSpecialKeyPressed(GLUT_KEY_RIGHT)) {
 		steering = Vehicle::MAX_RIGHT_STEERING_DEGS * -1;
-		VehicleData->Steering = steering;
 	}
 
 	if (KeyManager::get()->isSpecialKeyPressed(GLUT_KEY_UP)) {
 		speed = Vehicle::MAX_FORWARD_SPEED_MPS;
-		VehicleData->Speed = speed;
+
 	}
 
 	if (KeyManager::get()->isSpecialKeyPressed(GLUT_KEY_DOWN)) {
 		speed = Vehicle::MAX_BACKWARD_SPEED_MPS;
-		VehicleData->Speed = speed;
 	}
 
-
-
+	VehicleData->Steering = steering;
+	VehicleData->Speed = speed;
 
 	const float sleep_time_between_frames_in_seconds = 0.025;
 
